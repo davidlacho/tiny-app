@@ -1,0 +1,12 @@
+<% include .partials/_header %>
+<% for(let url in urls) { %>
+<div class="url">
+  <div class="original-url">URL:
+    <%= urls[url] %>
+  </div>
+  <div class="shortened-url">Shortened:
+    <%= url %>
+  </div>
+</div>
+<% }; %>
+<% include partials/_footer %>

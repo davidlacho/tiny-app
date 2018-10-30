@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/fiveache/tiny-app#readme",
   "dependencies": {
+    "ejs": "^2.6.1",
     "express": "^4.16.4"
   },
   "devDependencies": {
