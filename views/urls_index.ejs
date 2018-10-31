@@ -1,4 +1,4 @@
-<% include .partials/_header %>
+<% include partials/_header %>
 <% for(let url in urls) { %>
 <div class="url">
   <div class="original-url">URL:
@@ -8,5 +8,13 @@
     <%= url %>
   </div>
 </div>
+<div class="url-actions">
+  <form method="POST" action="/urls/<%= url %>/delete">
+    <button type="submit" name="delete">Delete</button></form>
+  <a href="/urls/<%= url %>">Edit </a>
+</div>
 <% }; %>
+<a href="/urls/new" alt="Add new URL">add new url</a>
+
+
 <% include partials/_footer %>

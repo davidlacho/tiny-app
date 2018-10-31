@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const logger = require('morgan');
 const {
   generateRandomString,
 } = require('./generate-random-string');
@@ -9,6 +10,7 @@ const PORT = 8080;
 
 
 app.set('view engine', 'ejs');
+app.use(logger('dev'));
 app.use(bodyParser.urlencoded({
   extended: true,
 }));
@@ -54,6 +56,7 @@ app.get('/urls/:id', (req, res) => {
   res.render('urls_show', templateVars);
 });
 
+// Creating a new URL
 app.post('/urls', (req, res) => {
   const {
     longURL,
@@ -62,6 +65,16 @@ app.post('/urls', (req, res) => {
   urlDatabase[random] = longURL;
   res.status = 302;
   res.redirect(`/urls/${random}`);
+});
+
+app.post('/urls/:id/delete', (req, res) => {
+  delete urlDatabase[req.params.id];
+  res.redirect('/urls/');
+});
+
+app.post('/urls/:id', (req, res) => {
+  urlDatabase[req.params.id] = req.body.newURL;
+  res.redirect(req.get('referer'));
 });
 
 app.listen(PORT, () => {
