@@ -23,10 +23,10 @@ const urlDatabase = {
 };
 
 const users = {
-  sampleUser: {
-    id: 'userRandomID',
+  1234: {
+    id: '1234',
     email: 'user@example.com',
-    password: 'purple-monkey-dinosaur',
+    password: '1234',
   },
 };
 
@@ -106,7 +106,6 @@ app.post('/urls/:id', (req, res) => {
 });
 
 app.get('/register', (req, res) => {
-  console.log(users);
   if (req.cookies.id) {
     res.redirect('/');
   }
@@ -148,9 +147,7 @@ app.post('/register', (req, res) => {
   }
 });
 
-
 app.get('/login', (req, res) => {
-  console.log(users);
   if (req.cookies.id) {
     res.redirect('/');
   }
@@ -164,20 +161,29 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  const longinEmail = req.body.email;
-  for (id in users) {
-    if (id.email === longinEmail) {
-
-    } else {
-
-    }
-  };
-  const user = users[req.body.username];
-  if (userObj) {
-    res.cookie('id', userObj.id);
-    res.redirect('/');
+  if (!req.body.email || !req.body.password) {
+    res.status(400);
+    res.send('Error. Needs Username & Password Fields.');
   } else {
-    res.redirect('/register');
+    let userExists = false;
+    let userRecord;
+    for (user in users) {
+      if (req.body.email === users[user].email) {
+        userExists = true;
+        userRecord = users[user];
+        break;
+      };
+    }
+    if (!userExists) {
+      res.status(400);
+      res.send('No account. Perhaps register?');
+    } else if (req.body.password === userRecord.password) {
+      res.cookie('id', userRecord.id);
+      res.redirect('/urls');
+    } else {
+      res.status(400);
+      res.send('Incorrect password.');
+    }
   }
 });
 
