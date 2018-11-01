@@ -96,6 +96,20 @@ app.post('/urls/:id', (req, res) => {
   res.redirect(req.get('referer'));
 });
 
+app.get('/register', (req, res) => {
+  const templateVars = {
+    shortURL: req.params.id,
+    urls: urlDatabase,
+    username: req.cookies["username"],
+  };
+  res.render('urls_register', templateVars);
+});
+
+app.post('/register', (req, res) => {
+  const email = req.body.email;
+  const pwd = req.body.pwd;
+});
+
 app.listen(PORT, () => {
   console.clear();
   console.log(`App is listening on port ${PORT}`);
