@@ -22,34 +22,50 @@ const urlDatabase = {
   '9sm5xK': 'http://www.google.com',
 };
 
+const users = {
+  sampleUser: {
+    id: 'userRandomID',
+    email: 'user@example.com',
+    password: 'purple-monkey-dinosaur',
+  },
+};
 
 app.get('/', (req, res) => {
   res.redirect('/urls/new');
 });
 
 app.post('/login', (req, res) => {
-  res.cookie('username', req.body.username);
-  res.redirect('/');
+  const userObj = users[req.body.username];
+  if (userObj) {
+    res.cookie('id', userObj.id);
+    res.redirect('/');
+  } else {
+    res.redirect('/register');
+  }
 });
 
 app.post('/logout', (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('id');
   res.redirect(req.get('referer'));
 });
 
 
 app.get('/urls', (req, res) => {
+  const cookieId = req.cookies.id;
   const templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"],
+    user: users[cookieId],
   };
-  console.log('cookies', req.cookies["username"])
+
   res.render('urls_index', templateVars);
 });
 
 app.get('/urls/new', (req, res) => {
+  const cookieId = req.cookies.id;
+  const currentUser = users[cookieId];
   const templateVars = {
-    username: req.cookies["username"],
+    urls: urlDatabase,
+    user: currentUser,
   };
   res.render('urls_new', templateVars);
 });
@@ -67,11 +83,13 @@ app.get('/u/:shortURL', (req, res) => {
 });
 
 app.get('/urls/:id', (req, res) => {
+  const cookieId = req.cookies.id;
   const templateVars = {
     shortURL: req.params.id,
     urls: urlDatabase,
-    username: req.cookies["username"],
+    user: users[cookieId],
   };
+
   res.render('urls_show', templateVars);
 });
 
@@ -97,17 +115,47 @@ app.post('/urls/:id', (req, res) => {
 });
 
 app.get('/register', (req, res) => {
+  if (req.cookies.id) {
+    res.redirect('/');
+  }
+  const cookieId = req.cookies.id;
   const templateVars = {
     shortURL: req.params.id,
     urls: urlDatabase,
-    username: req.cookies["username"],
+    user: users[cookieId],
   };
+
   res.render('urls_register', templateVars);
 });
 
+app.get('/login', (req, res) => {
+  if (req.cookies.id) {
+    res.redirect('/');
+  }
+  const cookieId = req.cookies.id;
+  const templateVars = {
+    shortURL: req.params.id,
+    urls: urlDatabase,
+    user: users[cookieId],
+  };
+
+  res.render('urls_login', templateVars);
+});
+
 app.post('/register', (req, res) => {
-  const email = req.body.email;
-  const pwd = req.body.pwd;
+  const randomID = generateRandomString();
+  if (!req.body.email || !req.body.password) {
+    res.status(400);
+    res.send('Error. Needs Username & Password Fields.');
+  } else {
+    users[randomID] = {
+      id: randomID,
+      email: req.body.email,
+      password: req.body.password,
+    };
+    res.cookie('id', randomID);
+    res.redirect('/urls');
+  }
 });
 
 app.listen(PORT, () => {
