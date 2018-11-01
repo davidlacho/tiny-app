@@ -1,23 +1,11 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-
-<head>
-  <meta charset="utf-8">
-  <title></title>
-</head>
-
-<body>
-  <header>
-    <%if(user) {%>
-    Hello,
-    <%= user.id%>! <form action="/logout" method="POST">
-      <button type="submit" name="logout-button">Logout</button>
-    </form>
-    <% } else { %>
-    Login:
-    <form action="/login" method="POST">
-      <input type="text" name="username" value="username">
-      <button type="submit" name="submit-button">Submit</button>
-    </form>
-    <% } %>
-  </header>
+<% include _head %>
+<header>
+  <%if(user) {%>
+  Hello,
+  <%= user.id%>! <form action="/logout" method="POST">
+    <button type="submit" name="logout-button">Logout</button>
+  </form>
+  <% } else { %>
+  <a href='/login' alt="login">Login</a> or <a href='/register' alt="register">Register</a>
+  <% } %>
+</header>

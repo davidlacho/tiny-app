@@ -34,15 +34,6 @@ app.get('/', (req, res) => {
   res.redirect('/urls/new');
 });
 
-app.post('/login', (req, res) => {
-  const userObj = users[req.body.username];
-  if (userObj) {
-    res.cookie('id', userObj.id);
-    res.redirect('/');
-  } else {
-    res.redirect('/register');
-  }
-});
 
 app.post('/logout', (req, res) => {
   res.clearCookie('id');
@@ -115,6 +106,7 @@ app.post('/urls/:id', (req, res) => {
 });
 
 app.get('/register', (req, res) => {
+  console.log(users);
   if (req.cookies.id) {
     res.redirect('/');
   }
@@ -128,7 +120,37 @@ app.get('/register', (req, res) => {
   res.render('urls_register', templateVars);
 });
 
+app.post('/register', (req, res) => {
+  const randomID = generateRandomString();
+  if (!req.body.email || !req.body.password) {
+    res.status(400);
+    res.send('Error. Needs Username & Password Fields.');
+  } else {
+    let userExists = false;
+    for (user in users) {
+      if (req.body.email === users[user].email) {
+        userExists = true;
+        break;
+      };
+    }
+    if (userExists) {
+      res.status(400);
+      res.send('You seem to already be registered. Perhaps login?');
+    } else {
+      users[randomID] = {
+        id: randomID,
+        email: req.body.email,
+        password: req.body.password,
+      };
+      res.cookie('id', randomID);
+      res.redirect('/urls');
+    }
+  }
+});
+
+
 app.get('/login', (req, res) => {
+  console.log(users);
   if (req.cookies.id) {
     res.redirect('/');
   }
@@ -138,23 +160,24 @@ app.get('/login', (req, res) => {
     urls: urlDatabase,
     user: users[cookieId],
   };
-
   res.render('urls_login', templateVars);
 });
 
-app.post('/register', (req, res) => {
-  const randomID = generateRandomString();
-  if (!req.body.email || !req.body.password) {
-    res.status(400);
-    res.send('Error. Needs Username & Password Fields.');
+app.post('/login', (req, res) => {
+  const longinEmail = req.body.email;
+  for (id in users) {
+    if (id.email === longinEmail) {
+
+    } else {
+
+    }
+  };
+  const user = users[req.body.username];
+  if (userObj) {
+    res.cookie('id', userObj.id);
+    res.redirect('/');
   } else {
-    users[randomID] = {
-      id: randomID,
-      email: req.body.email,
-      password: req.body.password,
-    };
-    res.cookie('id', randomID);
-    res.redirect('/urls');
+    res.redirect('/register');
   }
 });
 
