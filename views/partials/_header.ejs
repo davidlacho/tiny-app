@@ -2,7 +2,7 @@
 <header>
   <%if(user) {%>
   Hello,
-  <%= user.id%>! <form action="/logout" method="POST">
+  <%= user.email%>! <form action="/logout" method="POST">
     <button type="submit" name="logout-button">Logout</button>
   </form>
   <% } else { %>

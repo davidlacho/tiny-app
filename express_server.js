@@ -123,7 +123,7 @@ app.post('/register', (req, res) => {
   const randomID = generateRandomString();
   if (!req.body.email || !req.body.password) {
     res.status(400);
-    res.send('Error. Needs Username & Password Fields.');
+    res.send('Error. Needs Email & Password Fields.');
   } else {
     let userExists = false;
     for (user in users) {
@@ -163,7 +163,7 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
   if (!req.body.email || !req.body.password) {
     res.status(400);
-    res.send('Error. Needs Username & Password Fields.');
+    res.send('Error. Needs Email & Password Fields.');
   } else {
     let userExists = false;
     let userRecord;
@@ -175,13 +175,13 @@ app.post('/login', (req, res) => {
       };
     }
     if (!userExists) {
-      res.status(400);
+      res.status(403);
       res.send('No account. Perhaps register?');
     } else if (req.body.password === userRecord.password) {
       res.cookie('id', userRecord.id);
-      res.redirect('/urls');
+      res.redirect('/');
     } else {
-      res.status(400);
+      res.status(403);
       res.send('Incorrect password.');
     }
   }
