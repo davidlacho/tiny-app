@@ -1,14 +1,14 @@
 <% include partials/_header %>
 <div class="url">
   <div class="original-url">URL:
-    <%= urls[shortURL] %>
+    <%= urls[shortURL].longURL %>
   </div>
   <div class="shortened-url">Shortened:
     <%= shortURL %>
   </div>
   <div class="url-actions">
     <form method="POST" action="/urls/<%= shortURL %>">
-      <input type="text" name="newURL" value="<%= urls[shortURL] %>">
+      <input type="text" name="newURL" value="<%= shortURL %>">
       <button type="submit" name="delete">Update</button>
     </form>
     <div class="try-it"><a href='/u/<%= shortURL %>' target="_blank">/u/<%= shortURL %></a></div>

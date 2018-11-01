@@ -18,8 +18,14 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 
 const urlDatabase = {
-  b2xVn2: 'http://www.lighthouselabs.ca',
-  '9sm5xK': 'http://www.google.com',
+  b2xVn2: {
+    longURL: 'http://www.lighthouselabs.ca',
+    userID: '1234',
+  },
+  '9sm5xK': {
+    longURL: 'http://www.google.com',
+    userID: '1234',
+  },
 };
 
 const users = {
@@ -69,7 +75,7 @@ app.get('/u/:shortURL', (req, res) => {
   const {
     shortURL,
   } = req.params;
-  const longURL = urlDatabase[shortURL];
+  const longURL = urlDatabase[shortURL].longURL;
   if (longURL) {
     res.redirect(longURL);
   } else {
@@ -94,7 +100,7 @@ app.post('/urls', (req, res) => {
     longURL,
   } = req.body;
   const random = generateRandomString();
-  urlDatabase[random] = longURL;
+  urlDatabase[random].longURL = longURL;
   res.status = 302;
   res.redirect(`/urls/${random}`);
 });
@@ -152,16 +158,17 @@ app.post('/register', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  if (req.cookies.id) {
-    res.redirect('/');
-  }
   const cookieId = req.cookies.id;
-  const templateVars = {
-    shortURL: req.params.id,
-    urls: urlDatabase,
-    user: users[cookieId],
-  };
-  res.render('urls_login', templateVars);
+  const currentUser = users[cookieId];
+  if (currentUser) {res.redirect('/');
+  } else {
+    const templateVars = {
+      shortURL: req.params.id,
+      urls: urlDatabase,
+      user: users[cookieId],
+    };
+    res.render('urls_login', templateVars);
+  }
 });
 
 app.post('/login', (req, res) => {
