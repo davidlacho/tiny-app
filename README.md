@@ -40,3 +40,7 @@ SESSION_KEY = '<KEY>';
 Run the development web server using the `npm start` command (which will start nodemon).
 
 ## Screenshots
+!["Screenshot of Login Page"](https://github.com/fiveache/tiny-app/blob/master/docs/loginpage.png?raw=true)
+!["Screenshot of URLs Page"](https://github.com/fiveache/tiny-app/blob/master/docs/urlpage.png?raw=true)
+!["Screenshot of new URL Page"](https://github.com/fiveache/tiny-app/blob/master/docs/newurl.png?raw=true)
+!["Screenshot of URLs Edit Page"](https://github.com/fiveache/tiny-app/blob/master/docs/urlupdatepage.png?raw=true)
