@@ -19,7 +19,7 @@
     </ul>
 
     <div class="url-actions">
-      <form method="POST" action="/urls/<%= url %>/delete">
+      <form method="POST" action="/urls/<%= url %>/delete?_method=DELETE">
         <button type="submit" name="delete">Delete</button></form>
       <a href="/urls/<%= url %>">Edit </a>
     </div>

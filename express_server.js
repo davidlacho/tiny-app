@@ -1,3 +1,9 @@
+/*
+ * ========================================
+ * VARIABLE DECLARATION
+ * ========================================
+ */
+
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -5,15 +11,26 @@ const logger = require('morgan');
 // const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 const moment = require('moment');
-const cookieSession = require('cookie-session')
+const cookieSession = require('cookie-session');
+const methodOverride = require('method-override');
 
 const {
   generateRandomString,
 } = require('./generate-random-string');
 
+const urlDatabase = {};
+
+const users = {};
+
+
+/*
+ * ========================================
+ * EXPRESS CONFIG & MIDDLEWARE
+ * ========================================
+ */
+
 const app = express();
 const PORT = 8080;
-
 
 app.set('view engine', 'ejs');
 app.use(logger('dev'));
@@ -26,29 +43,29 @@ app.use(cookieSession({
   secret: process.env.SESSION_KEY,
 }));
 
-const urlDatabase = {
-  // b2xVn2: {
-  //   longURL: 'http://www.lighthouselabs.ca',
-  //   userID: '1234',
-  //   date: 1541126988418,
-  //   visitNumber: 0,
-  // },
-  // '9sm5xK': {
-  //   longURL: 'http://www.google.com',
-  //   userID: '1234',
-  //   date: 1541126988618,
-  //   visitNumber: 0,
-  // },
-};
+app.use(methodOverride('_method'));
 
+/*
+ * ========================================
+ * Helper Functions
+ * ========================================
+ */
 
-const users = {
-  1234: {
-    id: '1234',
-    email: 'user@example.com',
-    password: '1234',
-  },
-};
+const urlsForUser = (id) => {
+  newObj = {};
+  for (url in urlDatabase) {
+    if (urlDatabase[url].userID === id) {
+      newObj[url] = urlDatabase[url];
+    }
+  }
+  return newObj;
+}
+
+/*
+ * ========================================
+ * GET ROUTES
+ * ========================================
+ */
 
 app.get('/', (req, res) => {
   const cookieId = req.session.id;
@@ -60,22 +77,6 @@ app.get('/', (req, res) => {
     res.redirect('/login');
   }
 });
-
-
-app.post('/logout', (req, res) => {
-  req.session = null;
-  res.redirect('/urls');
-});
-
-const urlsForUser = (id) => {
-  newObj = {};
-  for (url in urlDatabase) {
-    if (urlDatabase[url].userID === id) {
-      newObj[url] = urlDatabase[url];
-    }
-  }
-  return newObj;
-}
 
 app.get('/urls', (req, res) => {
   const cookieId = req.session.id;
@@ -91,6 +92,7 @@ app.get('/urls', (req, res) => {
     res.send('You must be logged in to view the page');
   }
 });
+
 
 app.get('/urls/new', (req, res) => {
   const cookieId = req.session.id;
@@ -149,8 +151,50 @@ app.get('/urls/:id', (req, res) => {
   }
 });
 
+app.get('/register', (req, res) => {
+  const cookieId = req.session.id;
+  const currentUser = users[cookieId];
+  if (currentUser) {
+    res.redirect('/');
+  }
+  const templateVars = {
+    shortURL: req.params.id,
+    urls: urlDatabase,
+    user: users[cookieId],
+  };
 
-// Creating a new URL
+  res.render('urls_register', templateVars);
+});
+
+
+
+app.get('/login', (req, res) => {
+  const cookieId = req.session.id;
+  const currentUser = users[cookieId];
+
+  if (currentUser) {
+    res.redirect('/');
+  } else {
+    const templateVars = {
+      shortURL: req.params.id,
+      urls: urlDatabase,
+      user: users[cookieId],
+    };
+    res.render('urls_login', templateVars);
+  }
+});
+
+/*
+ * ========================================
+ * POST ROUTES
+ * ========================================
+ */
+
+app.post('/logout', (req, res) => {
+  req.session = null;
+  res.redirect('/urls');
+});
+
 app.post('/urls', (req, res) => {
   const cookieId = req.session.id;
   const currentUser = users[cookieId];
@@ -171,42 +215,6 @@ app.post('/urls', (req, res) => {
   } else {
     res.send('must be logged in to submit a url');
   }
-});
-
-app.post('/urls/:id/delete', (req, res) => {
-  const cookieId = req.session.id;
-  if (urlDatabase[req.params.id].userID === cookieId) {
-    delete urlDatabase[req.params.id];
-  } else {
-    res.send('This url does not blelong to you. Cannot delete.');
-  }
-  res.redirect('/urls');
-});
-
-app.post('/urls/:id', (req, res) => {
-  const cookieId = req.session.id;
-  const currentUser = users[cookieId];
-  if (urlDatabase[req.params.id].userID === currentUser.id) {
-    urlDatabase[req.params.id].longURL = req.body.newURL;
-    res.redirect(`/urls/${req.params.id}`);
-  } else {
-    res.send('You do not have permission to change this URL.');
-  }
-});
-
-app.get('/register', (req, res) => {
-  const cookieId = req.session.id;
-  const currentUser = users[cookieId];
-  if (currentUser) {
-    res.redirect('/');
-  }
-  const templateVars = {
-    shortURL: req.params.id,
-    urls: urlDatabase,
-    user: users[cookieId],
-  };
-
-  res.render('urls_register', templateVars);
 });
 
 app.post('/register', (req, res) => {
@@ -237,22 +245,6 @@ app.post('/register', (req, res) => {
   }
 });
 
-app.get('/login', (req, res) => {
-  const cookieId = req.session.id;
-  const currentUser = users[cookieId];
-
-  if (currentUser) {
-    res.redirect('/');
-  } else {
-    const templateVars = {
-      shortURL: req.params.id,
-      urls: urlDatabase,
-      user: users[cookieId],
-    };
-    res.render('urls_login', templateVars);
-  }
-});
-
 app.post('/login', (req, res) => {
   if (!req.body.email || !req.body.password) {
     res.status(400);
@@ -279,6 +271,45 @@ app.post('/login', (req, res) => {
     }
   }
 });
+
+/*
+ * ========================================
+ * PUT ROUTES
+ * ========================================
+ */
+
+app.put('/urls/:id', (req, res) => {
+  const cookieId = req.session.id;
+  const currentUser = users[cookieId];
+  if (urlDatabase[req.params.id].userID === currentUser.id) {
+    urlDatabase[req.params.id].longURL = req.body.newURL;
+    res.redirect(`/urls/${req.params.id}`);
+  } else {
+    res.send('You do not have permission to change this URL.');
+  }
+});
+
+/*
+ * ========================================
+ * DELETE ROUTES
+ * ========================================
+ */
+
+app.delete('/urls/:id/delete', (req, res) => {
+  const cookieId = req.session.id;
+  if (urlDatabase[req.params.id].userID === cookieId) {
+    delete urlDatabase[req.params.id];
+  } else {
+    res.send('This url does not blelong to you. Cannot delete.');
+  }
+  res.redirect('/urls');
+});
+
+/*
+ * ========================================
+ * SERVER CONFIG
+ * ========================================
+ */
 
 app.listen(PORT, () => {
   console.clear();

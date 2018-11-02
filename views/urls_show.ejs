@@ -19,7 +19,7 @@
 
     <div class="url-actions">
       Update:
-      <form method="POST" action="/urls/<%= shortURL %>">
+      <form method="POST" action="/urls/<%= shortURL %>/?_method=PUT">
         <input type="text" name="newURL" value="<%= urls[shortURL].longURL %>">
         <button type="submit" name="delete">Update</button>
       </form>
