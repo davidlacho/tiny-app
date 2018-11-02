@@ -1,11 +1,15 @@
+// Stretch work:
+// Figure out how to track unique session logins
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
+const moment = require('moment');
 const {
   generateRandomString,
 } = require('./generate-random-string');
-const bcrypt = require('bcrypt');
 
 const app = express();
 const PORT = 8080;
@@ -22,10 +26,14 @@ const urlDatabase = {
   b2xVn2: {
     longURL: 'http://www.lighthouselabs.ca',
     userID: '1234',
+    date: 1541126988418,
+    visitNumber: 0,
   },
   '9sm5xK': {
     longURL: 'http://www.google.com',
     userID: '1234',
+    date: 1541126988618,
+    visitNumber: 0,
   },
 };
 
@@ -38,7 +46,13 @@ const users = {
 };
 
 app.get('/', (req, res) => {
-  res.redirect('/urls/new');
+  const cookieId = req.cookies.id;
+  const currentUser = users[cookieId];
+  if (currentUser) {
+    res.redirect('/urls');
+  } else {
+    res.redirect('/login');
+  }
 });
 
 
@@ -50,7 +64,6 @@ app.post('/logout', (req, res) => {
 const urlsForUser = (id) => {
   newObj = {};
   for (url in urlDatabase) {
-    console.log(url)
     if (urlDatabase[url].userID === id) {
       newObj[url] = urlDatabase[url];
     }
@@ -69,7 +82,7 @@ app.get('/urls', (req, res) => {
 
     res.render('urls_index', templateVars);
   } else {
-    res.send('You must be logged in to view the page')
+    res.send('You must be logged in to view the page');
   }
 });
 
@@ -94,6 +107,10 @@ app.get('/u/:shortURL', (req, res) => {
   const {
     longURL
   } = urlDatabase[shortURL];
+
+  const numberOfVisits = urlDatabase[shortURL].visitNumber;
+  urlDatabase[shortURL].visitNumber = numberOfVisits + 1;
+  console.log(urlDatabase[shortURL]);
   if (longURL) {
     res.redirect(longURL);
   } else {
@@ -132,13 +149,13 @@ app.post('/urls', (req, res) => {
       longURL,
     } = req.body;
     const random = generateRandomString();
-    const cookieId = req.cookies.id;
     urlDatabase[random] = {
-      longURL: longURL,
-      userID: cookieId
+      longURL : longURL,
+      userID: cookieId,
+      date: moment().format('MMMM Do YYYY, h:mm:ss a'),
+      visitNumber: 0,
     };
 
-    console.log(urlDatabase);
     res.status = 302;
     res.redirect(`/urls/${random}`);
   } else {

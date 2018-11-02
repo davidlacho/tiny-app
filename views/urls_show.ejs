@@ -6,6 +6,12 @@
   <div class="shortened-url">Shortened:
     <%= shortURL %>
   </div>
+  <div class="Created">Created:
+    <%= urls[shortURL].date %>
+  </div>
+  <div class="NumberOfVisits">Number Of Visits:
+    <%= urls[url].visitNumber %>
+  </div>
   <div class="url-actions">
     <form method="POST" action="/urls/<%= shortURL %>">
       <input type="text" name="newURL" value="<%= urls[shortURL].longURL %>">
@@ -13,5 +19,6 @@
     </form>
     <div class="try-it">Try it out: <a href='/u/<%= shortURL %>' target="_blank">/u/<%= shortURL %></a></div>
   </div>
+  <a href="/urls" alt="all urls">See all URLS</a>
 </div>
 <% include partials/_footer %>
