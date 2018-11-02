@@ -81,56 +81,67 @@ POST /urls/:id
 
 ~if user is logged in and owns the URL for the given ID:~
 ~updates the URL~
-redirects to /urls
+<!-- DOES NOT REDIRECT TO URL -->
+~redirects to /urls~
 if user is not logged in:
+<!-- NOT HTML: -->
 (Minor) returns HTML with a relevant error message
 if user is logged it but does not own the URL for the given ID:
+<!-- NOT HTML: -->
 (Minor) returns HTML with a relevant error message
+
+
 POST /urls/:id/delete
-if user is logged in and owns the URL for the given ID:
-deletes the URL
-redirects to /urls
+~if user is logged in and owns the URL for the given ID:~
+~deletes the URL~
+~redirects to /urls~
 if user is not logged in:
-(Minor) returns HTML with a relevant error message
-if user is logged it but does not own the URL for the given ID:
-(Minor) returns HTML with a relevant error message
+~(Minor) returns HTML with a relevant error message~
+~if user is logged it but does not own the URL for the given ID:~
+~(Minor) returns HTML with a relevant error message~
+
 GET /login
+~if user is logged in:~
+~(Minor) redirects to /urls~
+~if user is not logged in:~
+~returns HTML with:~
+~a form which contains:~
+i~nput fields for email and password~
+~submit button that makes a POST request to /login~
 
-if user is logged in:
-(Minor) redirects to /urls
-if user is not logged in:
-returns HTML with:
-a form which contains:
-input fields for email and password
-submit button that makes a POST request to /login
-GET /register
+~GET /register~
 
-if user is logged in:
-(Minor) redirects to /urls
-if user is not logged in:
-returns HTML with:
-a form which contains:
-input fields for email and password
-a register button that makes a POST request to /register
-POST /login
+~if user is logged in:~
+~(Minor) redirects to /urls~
+~if user is not logged in:~
+~returns HTML with:~
+~a form which contains:~
+~input fields for email and password~
+~a register button that makes a POST request to /register~
+~POST /login~
 
-if email and password params match an existing user:
-sets a cookie
-redirects to /urls
-if email and password params don't match an existing user:
+~if email and password params match an existing user:~
+~sets a cookie~
+~redirects to /urls~
+~if email and password params don't match an existing user:~
+<!-- NOT HTML -->
 returns HTML with a relevant error message
-POST /register
 
+POST /register
 if email or password are empty:
+<!-- NOT HTML -->
 returns HTML with a relevant error message
 if email already exists:
+<!-- NOT HTML -->
 returns HTML with a relevant error message
-otherwise:
-creates a new user
-encrypts the new user's password with bcrypt
-sets a cookie
-redirects to /urls
-POST /logout
+~otherwise:~
+~creates a new user~
+~encrypts the new user's password with bcrypt~
+~sets a cookie~
+~redirects to /urls~
 
-deletes cookie
+~POST /logout~
+
+~deletes cookie~
+<!-- REDIRECTS TO LOGIN -->
 redirects to /urls

@@ -64,7 +64,7 @@ app.get('/', (req, res) => {
 
 app.post('/logout', (req, res) => {
   req.session = null;
-  res.redirect(('/'));
+  res.redirect('/urls');
 });
 
 const urlsForUser = (id) => {
@@ -177,6 +177,8 @@ app.post('/urls/:id/delete', (req, res) => {
   const cookieId = req.session.id;
   if (urlDatabase[req.params.id].userID === cookieId) {
     delete urlDatabase[req.params.id];
+  } else {
+    res.send('This url does not blelong to you. Cannot delete.');
   }
   res.redirect('/urls');
 });
@@ -184,7 +186,7 @@ app.post('/urls/:id/delete', (req, res) => {
 app.post('/urls/:id', (req, res) => {
   const cookieId = req.session.id;
   const currentUser = users[cookieId];
-  if (urlDatabase[req.params.id].userID === currentUser) {
+  if (urlDatabase[req.params.id].userID === currentUser.id) {
     urlDatabase[req.params.id].longURL = req.body.newURL;
     res.redirect(`/urls/${req.params.id}`);
   } else {
