@@ -100,7 +100,13 @@ app.post('/urls', (req, res) => {
     longURL,
   } = req.body;
   const random = generateRandomString();
-  urlDatabase[random].longURL = longURL;
+  const cookieId = req.cookies.id;
+  urlDatabase[random] = {
+    longURL: longURL,
+    userID: cookieId
+  };
+
+  console.log(urlDatabase);
   res.status = 302;
   res.redirect(`/urls/${random}`);
 });
@@ -116,10 +122,11 @@ app.post('/urls/:id', (req, res) => {
 });
 
 app.get('/register', (req, res) => {
-  if (req.cookies.id) {
+  const cookieId = req.cookies.id;
+  const currentUser = users[cookieId];
+  if (currentUser) {
     res.redirect('/');
   }
-  const cookieId = req.cookies.id;
   const templateVars = {
     shortURL: req.params.id,
     urls: urlDatabase,
@@ -160,7 +167,8 @@ app.post('/register', (req, res) => {
 app.get('/login', (req, res) => {
   const cookieId = req.cookies.id;
   const currentUser = users[cookieId];
-  if (currentUser) {res.redirect('/');
+  if (currentUser) {
+    res.redirect('/');
   } else {
     const templateVars = {
       shortURL: req.params.id,
