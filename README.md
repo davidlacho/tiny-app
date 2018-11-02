@@ -38,3 +38,5 @@ SESSION_KEY = '<KEY>';
 ```
 
 Run the development web server using the `npm start` command (which will start nodemon).
+
+## Screenshots
