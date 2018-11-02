@@ -1,28 +1,31 @@
 <% include partials/_header %>
-<ul>
-  <li>
-    URL:<%= urls[shortURL].longURL %>
-    <ul>
-      <li>
+<ul class="list-group mt-6">
+  <li class="list-group-item">
+    URL:
+    <%= urls[shortURL].longURL %>
+    <ul class="list-group">
+      <li class="list-group-item">
         Shortened:
-        <a href='/u/<%= shortURL %>' title="Shortcut for <%= urls[shortURL].longURL %>">u/<%= shortURL %></a>
+        <a href='/u/<%= shortURL %>' title="Shortcut for <%= urls[shortURL].longURL %>"><%= `u/${shortURL}` %></a>
       </li>
-      <li>
+      <li class="list-group-item">
         Created:
         <%= urls[shortURL].date %>
       </li>
-      <li>
+      <li class="list-group-item">
         Number Of Visits:
         <%= urls[shortURL].visitNumber %>
       </li>
     </ul>
-
-    <div class="url-actions">
-      Update:
+    <div class="input-group mb-3">
       <form method="POST" action="/urls/<%= shortURL %>/?_method=PUT">
-        <input type="text" name="newURL" value="<%= urls[shortURL].longURL %>">
-        <button type="submit" name="delete">Update</button>
+        <input type="text" class="form-control" name="newURL" value="<%= urls[shortURL].longURL %>">
+        <div class="input-group-append">
+          <button type="submit" name="delete" class="btn btn-primary">Update</button>
+        </div>
       </form>
+    </div>
+  </li>
 </ul>
 <a href="/urls" title="all urls">See all URLS</a>
 </div>

@@ -1,11 +1,20 @@
 <% include _head %>
 <header>
-  <%if(user) {%>
-  Hello,
-  <%= user.email%>! <form action="/logout" method="POST">
-    <button type="submit" name="logout-button">Logout</button>
-  </form>
-  <% } else { %>
-  <a href='/login' alt="login">Login</a> or <a href='/register' alt="register">Register</a>
-  <% } %>
+  <nav class="navbar navbar-dark bg-dark">
+    <a class="navbar-brand" href="/">TinyApp</a>
+    <%if(user) {%>
+    <div class="nav-item form-group">
+      Hello,
+      <%= user.email%>! <form action="/logout" method="POST">
+        <button type="submit"  class="btn btn-primary" name="logout-button">Logout</button>
+      </form>
+    </div>
+    <% } else { %>
+    <div class="nav-item">
+      <a href='/login' alt="login">Login</a> or <a href='/register' alt="register">Register</a>
+    </div>
+    <% } %>
+  </nav>
 </header>
+
+<div class="container">

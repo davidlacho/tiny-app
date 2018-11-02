@@ -1,7 +1,18 @@
 <% include partials/_header %>
-<form action="/urls" method="POST" style="margin:150px;">
-  <label for="longURL">Enter a URL:</label>
-  <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
-  <input type="submit" value="Submit">
-</form>
+
+
+<div class="input-group mb-3">
+  <form action="/urls" method="POST" style="margin:150px;">
+    <label for="longURL">Enter a URL:</label>
+    <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
+    <div class="input-group-append">
+
+    <button type="submit" value="Submit" name="submit" class="btn btn-primary">Submit</button>
+
+    </div>
+  </form>
+</div>
+
+
+
 <% include partials/_footer %>
