@@ -113,19 +113,27 @@ app.get('/urls/new', (req, res) => {
 });
 
 app.get('/u/:shortURL', (req, res) => {
+  const cookieId = req.session.id;
+  const currentUser = users[cookieId];
   const {
     shortURL,
   } = req.params;
-  let longURL = urlDatabase[shortURL].longURL;
-  const numberOfVisits = urlDatabase[shortURL].visitNumber;
-  urlDatabase[shortURL].visitNumber = numberOfVisits + 1;
-  if (!/^(f|ht)tp?:\/\//i.test(longURL)) {
-    longURL = `http://${longURL}`;
+  let longURL;
+  if (urlDatabase[shortURL]) {
+    longURL = urlDatabase[shortURL].longURL;
+    const numberOfVisits = urlDatabase[shortURL].visitNumber;
+    urlDatabase[shortURL].visitNumber = numberOfVisits + 1;
+    if (!/^(f|ht)tp?:\/\//i.test(longURL)) {
+      longURL = `http://${longURL}`;
+    }
   }
   if (longURL) {
     res.status(301).redirect(longURL);
   } else {
-    res.status(400).redirect('/');
+    res.status(400).render('warning', {
+      warning: 'This TinyURL does not exist!',
+      user: currentUser,
+    });
   }
 });
 

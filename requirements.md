@@ -1,16 +1,17 @@
 GET /
 
-~if user is logged in:~
+if user is logged in:
 ~(Minor) redirect to /urls~
 ~if user is not logged in:~
 ~(Minor) redirect to /login~
+
 GET /urls
 
-~if user is logged in:~
-returns HTML with:
+if user is logged in:
+~returns HTML with:~
 <!-- MAKE SURE IT'S HTML -->
 ~the site header (see Display Requirements above)~
-~a list (or table) of URLs the user has created, each list item~ ~containing:~
+~a list (or table) of URLs the user has created, each list item containing:~
 ~a short URL~
 ~the short URL's matching long URL~
 ~an edit button which makes a GET request to /urls/:id~
@@ -21,7 +22,7 @@ returns HTML with:
 ~(Minor) a link to "Create a New Short Link" which makes a GET request to /urls/new~
 ~if user is not logged in:~
 <!-- MAKE SURE IT IS HTML -->
-returns HTML with a relevant error message
+~returns HTML with a relevant error message~
 
 
 ~GET /urls/new~
@@ -55,10 +56,10 @@ GET /urls/:id
 
 ~if user is not logged in:~
 <!-- MAKE SURE IT IS HTML: -->
-returns HTML with a relevant error message
+~returns HTML with a relevant error message~
 ~if user is logged it but does not own the URL with the given ID:~
 <!-- MAKE SURE IT IS HTML -->
-returns HTML with a relevant error message
+~returns HTML with a relevant error message~
 
 GET /u/:id
 ~if URL for the given ID exists:~
@@ -69,20 +70,20 @@ GET /u/:id
 
 POST /urls
 
-~if user is logged in:~
-~generates a short URL, saves it, and associates it with the user~
-~redirects to /urls/:id, where :id matches the ID of the newly saved URL~
-~if user is not logged in:~
+if user is logged in:
+generates a short URL, saves it, and associates it with the user
+redirects to /urls/:id, where :id matches the ID of the newly saved URL
+if user is not logged in:
 <!-- MAKE SURE IT IS HTML -->
 (Minor) returns HTML with a relevant error message
 
 
 POST /urls/:id
 
-~if user is logged in and owns the URL for the given ID:~
-~updates the URL~
+if user is logged in and owns the URL for the given ID:
+updates the URL
 <!-- DOES NOT REDIRECT TO URL -->
-~redirects to /urls~
+redirects to /urls
 if user is not logged in:
 <!-- NOT HTML: -->
 (Minor) returns HTML with a relevant error message
@@ -92,38 +93,38 @@ if user is logged it but does not own the URL for the given ID:
 
 
 POST /urls/:id/delete
-~if user is logged in and owns the URL for the given ID:~
-~deletes the URL~
-~redirects to /urls~
+if user is logged in and owns the URL for the given ID:
+deletes the URL
+redirects to /urls
 if user is not logged in:
-~(Minor) returns HTML with a relevant error message~
-~if user is logged it but does not own the URL for the given ID:~
-~(Minor) returns HTML with a relevant error message~
+(Minor) returns HTML with a relevant error message
+if user is logged it but does not own the URL for the given ID:
+(Minor) returns HTML with a relevant error message
 
 GET /login
-~if user is logged in:~
-~(Minor) redirects to /urls~
-~if user is not logged in:~
-~returns HTML with:~
-~a form which contains:~
-i~nput fields for email and password~
-~submit button that makes a POST request to /login~
+if user is logged in:
+(Minor) redirects to /urls
+if user is not logged in:
+returns HTML with:
+a form which contains:
+input fields for email and password
+submit button that makes a POST request to /login
 
-~GET /register~
+GET /register
 
-~if user is logged in:~
-~(Minor) redirects to /urls~
-~if user is not logged in:~
-~returns HTML with:~
-~a form which contains:~
-~input fields for email and password~
-~a register button that makes a POST request to /register~
-~POST /login~
+if user is logged in:
+(Minor) redirects to /urls
+if user is not logged in:
+returns HTML with:
+a form which contains:
+input fields for email and password
+a register button that makes a POST request to /register
+POST /login
 
-~if email and password params match an existing user:~
-~sets a cookie~
-~redirects to /urls~
-~if email and password params don't match an existing user:~
+if email and password params match an existing user:
+sets a cookie
+redirects to /urls
+if email and password params don't match an existing user:
 <!-- NOT HTML -->
 returns HTML with a relevant error message
 
@@ -134,14 +135,14 @@ returns HTML with a relevant error message
 if email already exists:
 <!-- NOT HTML -->
 returns HTML with a relevant error message
-~otherwise:~
-~creates a new user~
-~encrypts the new user's password with bcrypt~
-~sets a cookie~
-~redirects to /urls~
+otherwise:
+creates a new user
+encrypts the new user's password with bcrypt
+sets a cookie
+redirects to /urls
 
-~POST /logout~
+POST /logout
 
-~deletes cookie~
+deletes cookie
 <!-- REDIRECTS TO LOGIN -->
 redirects to /urls
