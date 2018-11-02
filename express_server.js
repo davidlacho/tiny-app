@@ -51,13 +51,35 @@ app.use(methodOverride('_method'));
  */
 
 const urlsForUser = (id) => {
-  newObj = {};
+  const newObj = {};
   for (url in urlDatabase) {
     if (urlDatabase[url].userID === id) {
       newObj[url] = urlDatabase[url];
     }
   }
   return newObj;
+};
+
+const doesUserExist = (req) => {
+  let userExists = false;
+  for (user in users) {
+    if (req.body.email === users[user].email) {
+      userExists = true;
+      break;
+    };
+  };
+  return userExists;
+}
+
+const getUserRecord = (req) => {
+  let userRecord;
+  for (user in users) {
+    if (req.body.email === users[user].email) {
+      userRecord = users[user];
+      break;
+    };
+  }
+  return userRecord;
 };
 
 /*
@@ -135,9 +157,8 @@ app.get('/u/:shortURL', (req, res) => {
 
 app.get('/urls/:id', (req, res) => {
   const cookieId = req.session.id;
-
   const requestedTinyURL = urlDatabase[req.params.id];
-  let templateVars = {
+  const templateVars = {
     shortURL: req.params.id,
     urls: urlDatabase,
     user: users[cookieId],
@@ -173,15 +194,12 @@ app.get('/register', (req, res) => {
     urls: urlDatabase,
     user: users[cookieId],
   };
-
   res.render('urls_register', templateVars);
 });
-
 
 app.get('/login', (req, res) => {
   const cookieId = req.session.id;
   const currentUser = users[cookieId];
-
   if (currentUser) {
     res.redirect('/');
   } else {
@@ -239,29 +257,21 @@ app.post('/register', (req, res) => {
       warning: 'Error. Needs Email & Password Fields.',
       user: '',
     });
+  }
+  if (doesUserExist(req)) {
+    res.status(400);
+    res.render('warning', {
+      warning: 'You seem to already be registered. Perhaps login?',
+      user: '',
+    });
   } else {
-    let userExists = false;
-    for (user in users) {
-      if (req.body.email === users[user].email) {
-        userExists = true;
-        break;
-      };
-    }
-    if (userExists) {
-      res.status(400);
-      res.render('warning', {
-        warning: 'You seem to already be registered. Perhaps login?',
-        user: '',
-      });
-    } else {
-      users[randomID] = {
-        id: randomID,
-        email: req.body.email,
-        password: bcrypt.hashSync(req.body.password, 10),
-      };
-      req.session.id = randomID;
-      res.redirect('/urls');
-    }
+    users[randomID] = {
+      id: randomID,
+      email: req.body.email,
+      password: bcrypt.hashSync(req.body.password, 10),
+    };
+    req.session.id = randomID;
+    res.redirect('/urls');
   }
 });
 
@@ -273,16 +283,8 @@ app.post('/login', (req, res) => {
       user: '',
     });
   } else {
-    let userExists = false;
-    let userRecord;
-    for (user in users) {
-      if (req.body.email === users[user].email) {
-        userExists = true;
-        userRecord = users[user];
-        break;
-      };
-    }
-    if (!userExists) {
+    const userRecord = getUserRecord(req);
+    if (!doesUserExist(req)) {
       res.status(403);
       res.render('warning', {
         warning: 'No account. Perhaps register?',
