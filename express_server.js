@@ -43,18 +43,33 @@ app.get('/', (req, res) => {
 
 app.post('/logout', (req, res) => {
   res.clearCookie('id');
-  res.redirect(req.get('referer'));
+  res.redirect(('/'));
 });
 
+const urlsForUser = (id) => {
+  newObj = {};
+  for (url in urlDatabase) {
+    console.log(url)
+    if (urlDatabase[url].userID === id) {
+      newObj[url] = urlDatabase[url];
+    }
+  }
+  return newObj;
+}
 
 app.get('/urls', (req, res) => {
   const cookieId = req.cookies.id;
-  const templateVars = {
-    urls: urlDatabase,
-    user: users[cookieId],
-  };
+  const currentUser = users[cookieId];
+  if (currentUser) {
+    const templateVars = {
+      urls: urlsForUser(cookieId),
+      user: users[cookieId],
+    };
 
-  res.render('urls_index', templateVars);
+    res.render('urls_index', templateVars);
+  } else {
+    res.send('You must be logged in to view the page')
+  }
 });
 
 app.get('/urls/new', (req, res) => {
@@ -75,7 +90,9 @@ app.get('/u/:shortURL', (req, res) => {
   const {
     shortURL,
   } = req.params;
-  const longURL = urlDatabase[shortURL].longURL;
+  const {
+    longURL
+  } = urlDatabase[shortURL];
   if (longURL) {
     res.redirect(longURL);
   } else {
@@ -85,39 +102,59 @@ app.get('/u/:shortURL', (req, res) => {
 
 app.get('/urls/:id', (req, res) => {
   const cookieId = req.cookies.id;
-  const templateVars = {
-    shortURL: req.params.id,
-    urls: urlDatabase,
-    user: users[cookieId],
-  };
+  if (urlDatabase[req.params.id].userID === cookieId) {
+    const templateVars = {
+      shortURL: req.params.id,
+      urls: urlDatabase,
+      user: users[cookieId],
+    };
 
-  res.render('urls_show', templateVars);
+    res.render('urls_show', templateVars);
+  } else {
+    if (!cookieId) {
+      res.send('You must be logged in.');
+    } else {
+      res.send(`The URL ${req.params.id} does not belong to you.`);
+    }
+    return;
+  }
+
 });
+
 
 // Creating a new URL
 app.post('/urls', (req, res) => {
-  const {
-    longURL,
-  } = req.body;
-  const random = generateRandomString();
   const cookieId = req.cookies.id;
-  urlDatabase[random] = {
-    longURL: longURL,
-    userID: cookieId
-  };
+  const currentUser = users[cookieId];
+  if (currentUser) {
+    const {
+      longURL,
+    } = req.body;
+    const random = generateRandomString();
+    const cookieId = req.cookies.id;
+    urlDatabase[random] = {
+      longURL: longURL,
+      userID: cookieId
+    };
 
-  console.log(urlDatabase);
-  res.status = 302;
-  res.redirect(`/urls/${random}`);
+    console.log(urlDatabase);
+    res.status = 302;
+    res.redirect(`/urls/${random}`);
+  } else {
+    res.send('must be logged in to submit a url');
+  }
 });
 
 app.post('/urls/:id/delete', (req, res) => {
-  delete urlDatabase[req.params.id];
+  const cookieId = req.cookies.id;
+  if (urlDatabase[req.params.id].userID === cookieId) {
+    delete urlDatabase[req.params.id];
+  }
   res.redirect('/urls/');
 });
 
 app.post('/urls/:id', (req, res) => {
-  urlDatabase[req.params.id] = req.body.newURL;
+  urlDatabase[req.params.id].longURL = req.body.newURL;
   res.redirect(req.get('referer'));
 });
 

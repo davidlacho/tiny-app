@@ -8,10 +8,10 @@
   </div>
   <div class="url-actions">
     <form method="POST" action="/urls/<%= shortURL %>">
-      <input type="text" name="newURL" value="<%= shortURL %>">
+      <input type="text" name="newURL" value="<%= urls[shortURL].longURL %>">
       <button type="submit" name="delete">Update</button>
     </form>
-    <div class="try-it"><a href='/u/<%= shortURL %>' target="_blank">/u/<%= shortURL %></a></div>
+    <div class="try-it">Try it out: <a href='/u/<%= shortURL %>' target="_blank">/u/<%= shortURL %></a></div>
   </div>
 </div>
 <% include partials/_footer %>
