@@ -6,7 +6,8 @@
     <ul class="list-group">
       <li class="list-group-item">
         Shortened:
-        <a href='/u/<%= shortURL %>' title="Shortcut for <%= urls[shortURL].longURL %>"><%= `u/${shortURL}` %></a>
+        <a href='/u/<%= shortURL %>' title="Shortcut for <%= urls[shortURL].longURL %>">
+          <%= `u/${shortURL}` %></a>
       </li>
       <li class="list-group-item">
         Created:
@@ -18,11 +19,9 @@
       </li>
     </ul>
     <div class="input-group mb-3">
-      <form method="POST" action="/urls/<%= shortURL %>/?_method=PUT">
+      <form method="POST" class="custom-flex-form" action="/urls/<%= shortURL %>/?_method=PUT">
         <input type="text" class="form-control" name="newURL" value="<%= urls[shortURL].longURL %>">
-        <div class="input-group-append">
-          <button type="submit" name="delete" class="btn btn-primary">Update</button>
-        </div>
+        <button type="submit" name="delete" class="btn btn-primary mt-6 update-button">Update</button>
       </form>
     </div>
   </li>

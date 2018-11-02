@@ -22,12 +22,12 @@
         <%= urls[url].visitNumber %>
       </li>
     </ul>
-    <div class="btn-group mt-4" role="group" aria-label="Button Group">
-      <form method="POST" action="/urls/<%= url %>/delete?_method=DELETE">
-        <button class="btn btn-outline-warning" type="submit" name="delete">Delete</button></form>
-      <a href="/urls/<%= url %>" class="btn btn-outline-primary">Edit </a>
 
-    </div>
+      <form method="POST" action="/urls/<%= url %>/delete?_method=DELETE">
+        <button class="btn btn-primary" type="submit" name="delete">Delete</button></form>
+      <a href="/urls/<%= url %>" class="btn btn-primary" >Edit </a>
+
+
   </li>
 </ul>
 <% }; %>

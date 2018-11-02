@@ -5,3 +5,13 @@ form {
 .login-area {
   margin-top: 8px;
 }
+
+.custom-flex-form {
+  display: flex;
+  padding-right: 16px;
+}
+
+.update-button {
+  display: inline-block;
+  margin-left: 4px;
+}
