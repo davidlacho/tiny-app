@@ -66,25 +66,25 @@ GET /u/:id
 ~redirects to the corresponding long URL~
 ~if URL for the given ID does not exist:~
 <!-- MAKE SURE IT IS HTML -->
-(Minor) returns HTML with a relevant error message
+~(Minor) returns HTML with a relevant error message~
 
 POST /urls
 
 if user is logged in:
-generates a short URL, saves it, and associates it with the user
-redirects to /urls/:id, where :id matches the ID of the newly saved URL
-if user is not logged in:
+~generates a short URL, saves it, and associates it with the user~
+~redirects to /urls/:id, where :id matches the ID of the newly saved URL~
+~if user is not logged in:~
 <!-- MAKE SURE IT IS HTML -->
-(Minor) returns HTML with a relevant error message
+~(Minor) returns HTML with a relevant error message~
 
 
 POST /urls/:id
 
-if user is logged in and owns the URL for the given ID:
-updates the URL
+~if user is logged in and owns the URL for the given ID:~
+~updates the URL~
 <!-- DOES NOT REDIRECT TO URL -->
-redirects to /urls
-if user is not logged in:
+~redirects to /urls~
+~if user is not logged in:~
 <!-- NOT HTML: -->
 (Minor) returns HTML with a relevant error message
 if user is logged it but does not own the URL for the given ID:

@@ -71,7 +71,6 @@ const urlsForUser = (id) => {
 app.get('/', (req, res) => {
   const cookieId = req.session.id;
   const currentUser = users[cookieId];
-  console.log(cookieId);
   if (currentUser) {
     res.redirect('/urls');
   } else {
@@ -104,7 +103,6 @@ app.get('/urls/new', (req, res) => {
     const templateVars = {
       urls: urlDatabase,
       user: currentUser,
-      warning: '',
     };
     res.render('urls_new', templateVars);
   } else {
@@ -145,7 +143,6 @@ app.get('/urls/:id', (req, res) => {
     shortURL: req.params.id,
     urls: urlDatabase,
     user: users[cookieId],
-    warning: '',
   };
 
   if (requestedTinyURL) {
@@ -154,10 +151,11 @@ app.get('/urls/:id', (req, res) => {
       res.render('urls_show', templateVars);
     }
     if (!cookieId) {
-      templateVars.warning = 'You must be logged in.';
+      templateVars.warning = 'You must be logged in to view this TinyURL.';
+      templateVars.user = '';
+      res.render('warning', templateVars);
     } else {
       templateVars.warning = `The URL ${req.params.id} does not belong to you.`;
-      templateVars.urls = '';
       res.render('warning', templateVars);
     }
   } else {
@@ -176,7 +174,6 @@ app.get('/register', (req, res) => {
     shortURL: req.params.id,
     urls: urlDatabase,
     user: users[cookieId],
-    warning: '',
   };
 
   res.render('urls_register', templateVars);
@@ -194,7 +191,6 @@ app.get('/login', (req, res) => {
       shortURL: req.params.id,
       urls: urlDatabase,
       user: users[cookieId],
-      warning: '',
     };
     res.render('urls_login', templateVars);
   }
@@ -230,6 +226,7 @@ app.post('/urls', (req, res) => {
   } else {
     const templateVars = {
       warning: 'You must be logged in to submit a URL',
+      user: '',
     };
     res.render('warning', templateVars);
   }
@@ -239,10 +236,10 @@ app.post('/register', (req, res) => {
   const randomID = generateRandomString();
   if (!req.body.email || !req.body.password) {
     res.status(400);
-
     res.render('warning', {
-      warning: 'Error. Needs Email & Password Fields.'
-    }, );
+      warning: 'Error. Needs Email & Password Fields.',
+      user: '',
+    });
   } else {
     let userExists = false;
     for (user in users) {
@@ -274,6 +271,7 @@ app.post('/login', (req, res) => {
     res.status(400);
     res.render('warning', {
       warning: 'Error. Needs Email & Password Fields.',
+      user: '',
     });
   } else {
     let userExists = false;
@@ -315,7 +313,7 @@ app.put('/urls/:id', (req, res) => {
   const currentUser = users[cookieId];
   if (urlDatabase[req.params.id].userID === currentUser.id) {
     urlDatabase[req.params.id].longURL = req.body.newURL;
-    res.redirect(`/urls/${req.params.id}`);
+    res.redirect('/urls');
   } else {
     const templateVars = {
       user: users[cookieId],
