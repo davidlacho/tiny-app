@@ -1,3 +1,7 @@
 form {
   display: inline-block;
 }
+
+.login-area {
+  margin-top: 8px;
+}

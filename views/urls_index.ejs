@@ -2,9 +2,10 @@
 <% for(let url in urls) { %>
 <ul class="list-group mt-6">
   <li class="list-group-item">
-    URL:
-    <%=  urls[url].longURL %>
-
+    <div class="mb-6">
+      URL:
+      <%=  urls[url].longURL %>
+    </div>
     <ul class="list-group">
       <li class="list-group-item">
         Shortened:

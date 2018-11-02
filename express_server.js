@@ -82,16 +82,15 @@ app.get('/', (req, res) => {
 app.get('/urls', (req, res) => {
   const cookieId = req.session.id;
   const currentUser = users[cookieId];
-  if (currentUser) {
-    const templateVars = {
-      urls: urlsForUser(cookieId),
-      user: users[cookieId],
-    };
-
-    res.render('urls_index', templateVars);
-  } else {
-    res.send('You must be logged in to view the page');
+  const templateVars = {
+    urls: urlsForUser(cookieId),
+    user: users[cookieId],
+    warning: '',
+  };
+  if (!currentUser) {
+    templateVars.warning = 'You must be logged in to view the page';
   }
+  res.render('urls_index', templateVars);
 });
 
 
@@ -102,6 +101,7 @@ app.get('/urls/new', (req, res) => {
     const templateVars = {
       urls: urlDatabase,
       user: currentUser,
+      warning: '',
     };
     res.render('urls_new', templateVars);
   } else {
@@ -130,25 +130,33 @@ app.get('/urls/:id', (req, res) => {
   const cookieId = req.session.id;
 
   const requestedTinyURL = urlDatabase[req.params.id];
+  let templateVars = {
+    shortURL: req.params.id,
+    urls: urlDatabase,
+    user: '',
+    warning: '',
+  };
 
   if (requestedTinyURL) {
-    if (requestedTinyURL.userID === cookieId) {
-      const templateVars = {
-        shortURL: req.params.id,
-        urls: urlDatabase,
-        user: users[cookieId],
-      };
+    templateVars = {
+      shortURL: req.params.id,
+      urls: urlDatabase,
+      user: '',
+      warning: '',
+    };
 
+    if (requestedTinyURL.userID === cookieId) {
+      templateVars.user = users[cookieId];
       res.render('urls_show', templateVars);
+    }
+    if (!cookieId) {
+      templateVars.warning = 'You must be logged in.';
     } else {
-      if (!cookieId) {
-        res.send('You must be logged in.');
-      } else {
-        res.send(`The URL ${req.params.id} does not belong to you.`);
-      }
+      templateVars.warning = `The URL ${req.params.id} does not belong to you.`;
+      res.render('urls_index', templateVars);
     }
   } else {
-    res.send('Tiny URL does not exist!');
+    templateVars.warning = 'Tiny URL does not exist!';
   }
 });
 
@@ -162,6 +170,7 @@ app.get('/register', (req, res) => {
     shortURL: req.params.id,
     urls: urlDatabase,
     user: users[cookieId],
+    warning: '',
   };
 
   res.render('urls_register', templateVars);
@@ -179,6 +188,7 @@ app.get('/login', (req, res) => {
       shortURL: req.params.id,
       urls: urlDatabase,
       user: users[cookieId],
+      warning: '',
     };
     res.render('urls_login', templateVars);
   }

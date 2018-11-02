@@ -2,19 +2,22 @@
 <header>
   <nav class="navbar navbar-dark bg-dark">
     <a class="navbar-brand" href="/">TinyApp</a>
+    <div class="nav-item form-group login-area">
     <%if(user) {%>
-    <div class="nav-item form-group">
-      Hello,
-      <%= user.email%>! <form action="/logout" method="POST">
+      Hello, <%= user.email%>! <form action="/logout" method="POST">
         <button type="submit"  class="btn btn-primary" name="logout-button">Logout</button>
       </form>
-    </div>
     <% } else { %>
     <div class="nav-item">
       <a href='/login' alt="login">Login</a> or <a href='/register' alt="register">Register</a>
     </div>
     <% } %>
+  </div>
   </nav>
 </header>
-
+<% if(warning) { %>
+  <div class="alert alert-danger" role="alert">
+    <%= warning%>
+  </div>
+<% } %>
 <div class="container">
