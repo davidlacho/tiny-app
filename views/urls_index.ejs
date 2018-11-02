@@ -1,5 +1,6 @@
 <% include partials/_header %>
 <% if (user) { %>
+<a href="/urls/new" title="Add new URL" class="btn btn-primary add-new-button">Add new url</a>
 <% for(let url in urls) { %>
 <ul class="list-group mt-6">
   <li class="list-group-item">
@@ -22,17 +23,12 @@
         <%= urls[url].visitNumber %>
       </li>
     </ul>
-
-      <form method="POST" action="/urls/<%= url %>/delete?_method=DELETE">
-        <button class="btn btn-primary" type="submit" name="delete">Delete</button></form>
-      <a href="/urls/<%= url %>" class="btn btn-primary" >Edit </a>
-
-
+    <form method="POST" action="/urls/<%= url %>/delete?_method=DELETE">
+      <button class="btn btn-primary" type="submit" name="delete">Delete</button></form>
+    <a href="/urls/<%= url %>" class="btn btn-primary">Edit </a>
   </li>
 </ul>
 <% }; %>
-<a href="/urls/new" title="Add new URL" class="btn btn-primary">Add new url</a>
-
 <% } %>
 
 <% include partials/_footer %>

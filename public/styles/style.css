@@ -15,3 +15,7 @@ form {
   display: inline-block;
   margin-left: 4px;
 }
+
+.add-new-button {
+  margin-bottom: 12px;
+}
