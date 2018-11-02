@@ -1,24 +1,29 @@
 <% include partials/_header %>
-<div class="url">
-  <div class="original-url">URL:
-    <%= urls[shortURL].longURL %>
-  </div>
-  <div class="shortened-url">Shortened:
-    <%= shortURL %>
-  </div>
-  <div class="Created">Created:
-    <%= urls[shortURL].date %>
-  </div>
-  <div class="NumberOfVisits">Number Of Visits:
-    <%= urls[url].visitNumber %>
-  </div>
-  <div class="url-actions">
-    <form method="POST" action="/urls/<%= shortURL %>">
-      <input type="text" name="newURL" value="<%= urls[shortURL].longURL %>">
-      <button type="submit" name="delete">Update</button>
-    </form>
-    <div class="try-it">Try it out: <a href='/u/<%= shortURL %>' target="_blank">/u/<%= shortURL %></a></div>
-  </div>
-  <a href="/urls" alt="all urls">See all URLS</a>
+<ul>
+  <li>
+    URL:<%= urls[shortURL].longURL %>
+    <ul>
+      <li>
+        Shortened:
+        <a href='/u/<%= shortURL %>' title="Shortcut for <%= urls[shortURL].longURL %>">u/<%= shortURL %></a>
+      </li>
+      <li>
+        Created:
+        <%= urls[shortURL].date %>
+      </li>
+      <li>
+        Number Of Visits:
+        <%= urls[shortURL].visitNumber %>
+      </li>
+    </ul>
+
+    <div class="url-actions">
+      Update:
+      <form method="POST" action="/urls/<%= shortURL %>">
+        <input type="text" name="newURL" value="<%= urls[shortURL].longURL %>">
+        <button type="submit" name="delete">Update</button>
+      </form>
+</ul>
+<a href="/urls" title="all urls">See all URLS</a>
 </div>
 <% include partials/_footer %>

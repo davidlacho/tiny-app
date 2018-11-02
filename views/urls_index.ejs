@@ -2,25 +2,22 @@
 <ul>
   <% for(let url in urls) { %>
   <li>
-    <div class="url">
-      <div class="original-url">URL:
-        <%=  urls[url].longURL %>
-      </div>
-      <ul>
-        <li>
-          Shortened:
-          <a href='/u/<%= url %>'>u/<%= url %></a>
-        </li>
-        <li>
-          Created:
-          <%= urls[url].date %>
-        </li>
-        <li>
-          Number Of Visits:
-          <%= urls[url].visitNumber %>
-        </li>
-      </ul>
-    </div>
+    URL:<%=  urls[url].longURL %>
+    <ul>
+      <li>
+        Shortened:
+        <a href='/u/<%= url %>' title="Shortcut for <%=  urls[url].longURL %>">u/<%= url %></a>
+      </li>
+      <li>
+        Created:
+        <%= urls[url].date %>
+      </li>
+      <li>
+        Number Of Visits:
+        <%= urls[url].visitNumber %>
+      </li>
+    </ul>
+
     <div class="url-actions">
       <form method="POST" action="/urls/<%= url %>/delete">
         <button type="submit" name="delete">Delete</button></form>
@@ -30,7 +27,7 @@
 
     <% }; %>
 </ul>
-<a href="/urls/new" alt="Add new URL">add new url</a>
+<a href="/urls/new" title="Add new URL">add new url</a>
 
 
 <% include partials/_footer %>

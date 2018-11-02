@@ -23,18 +23,18 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 
 const urlDatabase = {
-  b2xVn2: {
-    longURL: 'http://www.lighthouselabs.ca',
-    userID: '1234',
-    date: 1541126988418,
-    visitNumber: 0,
-  },
-  '9sm5xK': {
-    longURL: 'http://www.google.com',
-    userID: '1234',
-    date: 1541126988618,
-    visitNumber: 0,
-  },
+  // b2xVn2: {
+  //   longURL: 'http://www.lighthouselabs.ca',
+  //   userID: '1234',
+  //   date: 1541126988418,
+  //   visitNumber: 0,
+  // },
+  // '9sm5xK': {
+  //   longURL: 'http://www.google.com',
+  //   userID: '1234',
+  //   date: 1541126988618,
+  //   visitNumber: 0,
+  // },
 };
 
 const users = {
@@ -104,39 +104,43 @@ app.get('/u/:shortURL', (req, res) => {
   const {
     shortURL,
   } = req.params;
-  const {
-    longURL
-  } = urlDatabase[shortURL];
-
+  let longURL = urlDatabase[shortURL].longURL;
   const numberOfVisits = urlDatabase[shortURL].visitNumber;
   urlDatabase[shortURL].visitNumber = numberOfVisits + 1;
-  console.log(urlDatabase[shortURL]);
+  if (!/^(f|ht)tp?:\/\//i.test(longURL)) {
+    longURL = `http://${longURL}`;
+  }
   if (longURL) {
-    res.redirect(longURL);
+    res.status(301).redirect(longURL);
   } else {
-    res.redirect('/');
+    res.status(400).redirect('/');
   }
 });
 
 app.get('/urls/:id', (req, res) => {
   const cookieId = req.cookies.id;
-  if (urlDatabase[req.params.id].userID === cookieId) {
-    const templateVars = {
-      shortURL: req.params.id,
-      urls: urlDatabase,
-      user: users[cookieId],
-    };
 
-    res.render('urls_show', templateVars);
-  } else {
-    if (!cookieId) {
-      res.send('You must be logged in.');
+  const requestedTinyURL = urlDatabase[req.params.id];
+
+  if (requestedTinyURL) {
+    if (requestedTinyURL.userID === cookieId) {
+      const templateVars = {
+        shortURL: req.params.id,
+        urls: urlDatabase,
+        user: users[cookieId],
+      };
+
+      res.render('urls_show', templateVars);
     } else {
-      res.send(`The URL ${req.params.id} does not belong to you.`);
+      if (!cookieId) {
+        res.send('You must be logged in.');
+      } else {
+        res.send(`The URL ${req.params.id} does not belong to you.`);
+      }
     }
-    return;
+  } else {
+    res.send('Tiny URL does not exist!');
   }
-
 });
 
 
@@ -150,7 +154,7 @@ app.post('/urls', (req, res) => {
     } = req.body;
     const random = generateRandomString();
     urlDatabase[random] = {
-      longURL : longURL,
+      longURL: longURL,
       userID: cookieId,
       date: moment().format('MMMM Do YYYY, h:mm:ss a'),
       visitNumber: 0,
@@ -168,12 +172,18 @@ app.post('/urls/:id/delete', (req, res) => {
   if (urlDatabase[req.params.id].userID === cookieId) {
     delete urlDatabase[req.params.id];
   }
-  res.redirect('/urls/');
+  res.redirect('/urls');
 });
 
 app.post('/urls/:id', (req, res) => {
-  urlDatabase[req.params.id].longURL = req.body.newURL;
-  res.redirect(req.get('referer'));
+  const cookieId = req.cookies.id;
+  const currentUser = users[cookieId];
+  if (urlDatabase[req.params.id].userID === currentUser) {
+    urlDatabase[req.params.id].longURL = req.body.newURL;
+    res.redirect(`/urls/${req.params.id}`);
+  } else {
+    res.send('You do not have permission to change this URL.');
+  }
 });
 
 app.get('/register', (req, res) => {
