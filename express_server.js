@@ -167,7 +167,6 @@ app.get('/register', (req, res) => {
 });
 
 
-
 app.get('/login', (req, res) => {
   const cookieId = req.session.id;
   const currentUser = users[cookieId];
