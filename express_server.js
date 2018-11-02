@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const {
   generateRandomString,
 } = require('./generate-random-string');
+const bcrypt = require('bcrypt');
 
 const app = express();
 const PORT = 8080;
@@ -193,7 +194,7 @@ app.post('/register', (req, res) => {
       users[randomID] = {
         id: randomID,
         email: req.body.email,
-        password: req.body.password,
+        password: bcrypt.hashSync(req.body.password, 10),
       };
       res.cookie('id', randomID);
       res.redirect('/urls');
@@ -233,7 +234,7 @@ app.post('/login', (req, res) => {
     if (!userExists) {
       res.status(403);
       res.send('No account. Perhaps register?');
-    } else if (req.body.password === userRecord.password) {
+    } else if (bcrypt.compareSync(req.body.password, userRecord.password)) {
       res.cookie('id', userRecord.id);
       res.redirect('/');
     } else {
