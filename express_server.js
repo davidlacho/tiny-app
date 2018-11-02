@@ -1,7 +1,8 @@
+require('dotenv').config()
 const express = require('express');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
-const cookieParser = require('cookie-parser');
+const session = require('cookie-session');
 const {
   generateRandomString,
 } = require('./generate-random-string');
@@ -16,7 +17,10 @@ app.use(logger('dev'));
 app.use(bodyParser.urlencoded({
   extended: true,
 }));
-app.use(cookieParser());
+app.use(session({
+  name: 'session',
+  secret: process.env.SESSION_KEY,
+}));
 
 const urlDatabase = {
   b2xVn2: {
@@ -43,7 +47,7 @@ app.get('/', (req, res) => {
 
 
 app.post('/logout', (req, res) => {
-  res.clearCookie('id');
+  req.session = null;
   res.redirect(('/'));
 });
 
@@ -59,7 +63,7 @@ const urlsForUser = (id) => {
 }
 
 app.get('/urls', (req, res) => {
-  const cookieId = req.cookies.id;
+  const cookieId = req.session.id;
   const currentUser = users[cookieId];
   if (currentUser) {
     const templateVars = {
@@ -74,7 +78,7 @@ app.get('/urls', (req, res) => {
 });
 
 app.get('/urls/new', (req, res) => {
-  const cookieId = req.cookies.id;
+  const cookieId = req.session.id;
   const currentUser = users[cookieId];
   if (currentUser) {
     const templateVars = {
@@ -102,7 +106,7 @@ app.get('/u/:shortURL', (req, res) => {
 });
 
 app.get('/urls/:id', (req, res) => {
-  const cookieId = req.cookies.id;
+  const cookieId = req.session.id;
   if (urlDatabase[req.params.id].userID === cookieId) {
     const templateVars = {
       shortURL: req.params.id,
@@ -125,14 +129,14 @@ app.get('/urls/:id', (req, res) => {
 
 // Creating a new URL
 app.post('/urls', (req, res) => {
-  const cookieId = req.cookies.id;
+  const cookieId = req.session.id;
   const currentUser = users[cookieId];
   if (currentUser) {
     const {
       longURL,
     } = req.body;
     const random = generateRandomString();
-    const cookieId = req.cookies.id;
+    const cookieId = req.session.id;
     urlDatabase[random] = {
       longURL: longURL,
       userID: cookieId
@@ -147,7 +151,7 @@ app.post('/urls', (req, res) => {
 });
 
 app.post('/urls/:id/delete', (req, res) => {
-  const cookieId = req.cookies.id;
+  const cookieId = req.session.id;
   if (urlDatabase[req.params.id].userID === cookieId) {
     delete urlDatabase[req.params.id];
   }
@@ -160,7 +164,7 @@ app.post('/urls/:id', (req, res) => {
 });
 
 app.get('/register', (req, res) => {
-  const cookieId = req.cookies.id;
+  const cookieId = req.session.id;
   const currentUser = users[cookieId];
   if (currentUser) {
     res.redirect('/');
@@ -196,14 +200,14 @@ app.post('/register', (req, res) => {
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password, 10),
       };
-      res.cookie('id', randomID);
+      req.session.id = randomID;
       res.redirect('/urls');
     }
   }
 });
 
 app.get('/login', (req, res) => {
-  const cookieId = req.cookies.id;
+  const cookieId = req.session.id;
   const currentUser = users[cookieId];
   if (currentUser) {
     res.redirect('/');
