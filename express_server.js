@@ -89,8 +89,11 @@ app.get('/urls', (req, res) => {
   };
   if (!currentUser) {
     templateVars.warning = 'You must be logged in to view the page';
+    templateVars.user = '';
+    res.render('warning', templateVars);
+  } else {
+    res.render('urls_index', templateVars);
   }
-  res.render('urls_index', templateVars);
 });
 
 
@@ -133,18 +136,11 @@ app.get('/urls/:id', (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
     urls: urlDatabase,
-    user: '',
+    user: users[cookieId],
     warning: '',
   };
 
   if (requestedTinyURL) {
-    templateVars = {
-      shortURL: req.params.id,
-      urls: urlDatabase,
-      user: '',
-      warning: '',
-    };
-
     if (requestedTinyURL.userID === cookieId) {
       templateVars.user = users[cookieId];
       res.render('urls_show', templateVars);
@@ -153,10 +149,12 @@ app.get('/urls/:id', (req, res) => {
       templateVars.warning = 'You must be logged in.';
     } else {
       templateVars.warning = `The URL ${req.params.id} does not belong to you.`;
-      res.render('urls_index', templateVars);
+      templateVars.urls = '';
+      res.render('warning', templateVars);
     }
   } else {
     templateVars.warning = 'Tiny URL does not exist!';
+    res.render('warning', templateVars);
   }
 });
 
@@ -202,7 +200,7 @@ app.get('/login', (req, res) => {
 
 app.post('/logout', (req, res) => {
   req.session = null;
-  res.redirect('/urls');
+  res.redirect('/login');
 });
 
 app.post('/urls', (req, res) => {
@@ -219,11 +217,13 @@ app.post('/urls', (req, res) => {
       date: moment().format('MMMM Do YYYY, h:mm:ss a'),
       visitNumber: 0,
     };
-
     res.status = 302;
     res.redirect(`/urls/${random}`);
   } else {
-    res.send('must be logged in to submit a url');
+    const templateVars = {
+      warning: 'You must be logged in to submit a URL',
+    };
+    res.render('warning', templateVars);
   }
 });
 
@@ -231,7 +231,10 @@ app.post('/register', (req, res) => {
   const randomID = generateRandomString();
   if (!req.body.email || !req.body.password) {
     res.status(400);
-    res.send('Error. Needs Email & Password Fields.');
+
+    res.render('warning', {
+      warning: 'Error. Needs Email & Password Fields.'
+    }, );
   } else {
     let userExists = false;
     for (user in users) {
@@ -242,7 +245,10 @@ app.post('/register', (req, res) => {
     }
     if (userExists) {
       res.status(400);
-      res.send('You seem to already be registered. Perhaps login?');
+      res.render('warning', {
+        warning: 'You seem to already be registered. Perhaps login?',
+        user: '',
+      });
     } else {
       users[randomID] = {
         id: randomID,
@@ -258,7 +264,9 @@ app.post('/register', (req, res) => {
 app.post('/login', (req, res) => {
   if (!req.body.email || !req.body.password) {
     res.status(400);
-    res.send('Error. Needs Email & Password Fields.');
+    res.render('warning', {
+      warning: 'Error. Needs Email & Password Fields.',
+    });
   } else {
     let userExists = false;
     let userRecord;
@@ -271,13 +279,19 @@ app.post('/login', (req, res) => {
     }
     if (!userExists) {
       res.status(403);
-      res.send('No account. Perhaps register?');
+      res.render('warning', {
+        warning: 'No account. Perhaps register?',
+        user: '',
+      });
     } else if (bcrypt.compareSync(req.body.password, userRecord.password)) {
       req.session.id = userRecord.id;
       res.redirect('/');
     } else {
       res.status(403);
-      res.send('Incorrect password.');
+      res.render('warning', {
+        warning: 'Incorrect Password.',
+        user: '',
+      });
     }
   }
 });
@@ -295,7 +309,11 @@ app.put('/urls/:id', (req, res) => {
     urlDatabase[req.params.id].longURL = req.body.newURL;
     res.redirect(`/urls/${req.params.id}`);
   } else {
-    res.send('You do not have permission to change this URL.');
+    const templateVars = {
+      user: users[cookieId],
+      warning: 'You do not have permission to change this URL.',
+    };
+    res.render('warning', templateVars);
   }
 });
 
@@ -310,7 +328,11 @@ app.delete('/urls/:id/delete', (req, res) => {
   if (urlDatabase[req.params.id].userID === cookieId) {
     delete urlDatabase[req.params.id];
   } else {
-    res.send('This url does not blelong to you. Cannot delete.');
+    const templateVars = {
+      user: users[cookieId],
+      warning: 'This url does not blelong to you. Cannot delete.',
+    };
+    res.render('warning', templateVars);
   }
   res.redirect('/urls');
 });

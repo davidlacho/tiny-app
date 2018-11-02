@@ -1,4 +1,5 @@
 <% include partials/_header %>
+<% if (user) { %>
 <% for(let url in urls) { %>
 <ul class="list-group mt-6">
   <li class="list-group-item">
@@ -32,5 +33,6 @@
 <% }; %>
 <a href="/urls/new" title="Add new URL" class="btn btn-primary">Add new url</a>
 
+<% } %>
 
 <% include partials/_footer %>
