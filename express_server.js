@@ -8,7 +8,6 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
-// const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 const moment = require('moment');
 const cookieSession = require('cookie-session');
@@ -21,7 +20,6 @@ const {
 const urlDatabase = {};
 
 const users = {};
-
 
 /*
  * ========================================
@@ -60,7 +58,7 @@ const urlsForUser = (id) => {
     }
   }
   return newObj;
-}
+};
 
 /*
  * ========================================
@@ -221,13 +219,14 @@ app.post('/urls', (req, res) => {
       date: moment().format('MMMM Do YYYY, h:mm:ss a'),
       visitNumber: 0,
     };
-    res.status = 302;
+    res.status(302);
     res.redirect(`/urls/${random}`);
   } else {
     const templateVars = {
       warning: 'You must be logged in to submit a URL',
       user: '',
     };
+    res.status(401);
     res.render('warning', templateVars);
   }
 });
@@ -319,6 +318,7 @@ app.put('/urls/:id', (req, res) => {
       user: users[cookieId],
       warning: 'You do not have permission to change this URL.',
     };
+    res.status(403);
     res.render('warning', templateVars);
   }
 });
@@ -336,8 +336,9 @@ app.delete('/urls/:id/delete', (req, res) => {
   } else {
     const templateVars = {
       user: users[cookieId],
-      warning: 'This url does not blelong to you. Cannot delete.',
+      warning: 'This url does not belong to you. Cannot delete.',
     };
+    res.status(403);
     res.render('warning', templateVars);
   }
   res.redirect('/urls');

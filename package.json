@@ -4,7 +4,7 @@
   "description": "A full stack web app built with Node and Express that allows users to shorten long URLs (à la bit.ly)",
   "main": "express_server.js",
   "scripts": {
-    "start": "nodemon"
+    "start": "./node_modules/.bin/nodemon -L express_server.js"
   },
   "repository": {
     "type": "git",
@@ -26,7 +26,6 @@
   "dependencies": {
     "bcrypt": "2.0.0",
     "body-parser": "^1.18.3",
-    "cookie-parser": "^1.4.3",
     "cookie-session": "^2.0.0-beta.3",
     "dotenv": "^6.1.0",
     "ejs": "^2.6.1",
