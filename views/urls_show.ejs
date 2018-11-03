@@ -22,9 +22,10 @@
         <%= urls[shortURL].uniqueVisits %>
       </li>
       <li class="list-group-item">
-        <% for (userID in Object.keys(urls[shortURL].visitedBy)) { %>
-        <%= `${userID} visited ${urls[shortURL].visitedBy[userID]} times.`%>
-        <% } %>
+        Users Visited: <br />
+        <% Object.keys(urls[shortURL].visitedBy).forEach((userID)=> { %>
+        <%= `${userID} visited ${urls[shortURL].visitedBy[userID]} time(s).`%><br />
+        <% }); %>
       </li>
       <li class="list-group-item">
         Visit Times:<br />
