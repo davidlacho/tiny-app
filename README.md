@@ -24,7 +24,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 Clone this repository to your local disk:
 ```
-https://github.com/fiveache/tiny-app.git
+git clone https://github.com/fiveache/tiny-app.git
 ```
 
 Install all dependencies (using the `npm install` command).
