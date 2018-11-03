@@ -147,18 +147,14 @@ app.get('/u/:shortURL', (req, res) => {
     if (!req.session.id) {
       req.session.id = 'Anonymous';
     }
-
-
     if (!('uniqueVisits' in req.session)) {
       req.session.uniqueVisits = {};
     }
-
     if (!(shortURL in req.session.uniqueVisits)) {
       req.session.uniqueVisits[shortURL] = 1;
       urlDatabase[shortURL].uniqueVisits += 1;
     }
 
-    //
     // Track visit times:
     urlDatabase[shortURL].visitTimes.push(moment().format('MMMM Do YYYY, h:mm:ss a'));
 
@@ -181,8 +177,6 @@ app.get('/u/:shortURL', (req, res) => {
       user: currentUser,
     });
   }
-
-  console.log(urlDatabase[shortURL]);
 });
 
 app.get('/urls/:id', (req, res) => {
@@ -281,7 +275,6 @@ app.post('/urls', (req, res) => {
     res.status(401);
     res.render('warning', templateVars);
   }
-  console.log(users, urlDatabase);
 });
 
 app.post('/register', (req, res) => {
