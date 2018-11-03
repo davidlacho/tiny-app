@@ -27,6 +27,11 @@ Clone this repository to your local disk:
 git clone https://github.com/fiveache/tiny-app.git
 ```
 
+change into directory `tiny-app`
+```
+cd tiny-app
+```
+
 Install all dependencies (using the `npm install` command).
 
 Create a `.env` file in the root of the TinyApp project by running `touch .env`.
