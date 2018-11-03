@@ -143,9 +143,11 @@ app.get('/u/:shortURL', (req, res) => {
     urlDatabase[shortURL].visitNumber = numberOfVisits + 1;
 
     // Cookies for implementing unique visits:
-    if (!req.session) {
-      req.session.visitor = true;
+
+    if (!req.session.id) {
+      req.session.id = 'Anonymous';
     }
+
 
     if (!('uniqueVisits' in req.session)) {
       req.session.uniqueVisits = {};
@@ -154,6 +156,17 @@ app.get('/u/:shortURL', (req, res) => {
     if (!(shortURL in req.session.uniqueVisits)) {
       req.session.uniqueVisits[shortURL] = 1;
       urlDatabase[shortURL].uniqueVisits += 1;
+    }
+
+    //
+    // Track visit times:
+    urlDatabase[shortURL].visitTimes.push(moment().format('MMMM Do YYYY, h:mm:ss a'));
+
+    // Track visitor id.
+    if (urlDatabase[shortURL].visitedBy[req.session.id]) {
+      urlDatabase[shortURL].visitedBy[req.session.id] += 1;
+    } else {
+      urlDatabase[shortURL].visitedBy[req.session.id] = 1;
     }
 
     if (!/^(f|ht)tp?:\/\//i.test(longURL)) {
@@ -168,6 +181,8 @@ app.get('/u/:shortURL', (req, res) => {
       user: currentUser,
     });
   }
+
+  console.log(urlDatabase[shortURL]);
 });
 
 app.get('/urls/:id', (req, res) => {
@@ -253,6 +268,8 @@ app.post('/urls', (req, res) => {
       date: moment().format('MMMM Do YYYY, h:mm:ss a'),
       visitNumber: 0,
       uniqueVisits: 0,
+      visitTimes: [],
+      visitedBy: {},
     };
     res.status(302);
     res.redirect(`/urls/${random}`);

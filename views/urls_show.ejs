@@ -21,6 +21,17 @@
         Number Of Unique Visits:
         <%= urls[shortURL].uniqueVisits %>
       </li>
+      <li class="list-group-item">
+        <% for (userID in Object.keys(urls[shortURL].visitedBy)) { %>
+        <%= `${userID} visited ${urls[shortURL].visitedBy[userID]} times.`%>
+        <% } %>
+      </li>
+      <li class="list-group-item">
+        Visit Times:<br />
+        <% urls[shortURL].visitTimes.forEach((visitTime) => { %>
+        <%= `${visitTime}.`%><br />
+        <% }); %>
+      </li>
     </ul>
     <div class="input-group mb-3">
       <form method="POST" class="custom-flex-form" action="/urls/<%= shortURL %>/?_method=PUT">
