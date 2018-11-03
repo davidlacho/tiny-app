@@ -50,6 +50,8 @@ SESSION_KEY = '12345';
 
 Run the development web server using the `npm start` command (which will start nodemon).
 
+Visit `localhost:8080/urls` to view TinyApp.
+
 ## Screenshots
 !["Screenshot of Login Page"](https://github.com/fiveache/tiny-app/blob/master/docs/loginpage.png?raw=true)
 !["Screenshot of URLs Page"](https://github.com/fiveache/tiny-app/blob/master/docs/urlpage.png?raw=true)

@@ -141,6 +141,21 @@ app.get('/u/:shortURL', (req, res) => {
     longURL = urlDatabase[shortURL].longURL;
     const numberOfVisits = urlDatabase[shortURL].visitNumber;
     urlDatabase[shortURL].visitNumber = numberOfVisits + 1;
+
+    // Cookies for implementing unique visits:
+    if (!req.session) {
+      req.session.visitor = true;
+    }
+
+    if (!('uniqueVisits' in req.session)) {
+      req.session.uniqueVisits = {};
+    }
+
+    if (!(shortURL in req.session.uniqueVisits)) {
+      req.session.uniqueVisits[shortURL] = 1;
+      urlDatabase[shortURL].uniqueVisits += 1;
+    }
+
     if (!/^(f|ht)tp?:\/\//i.test(longURL)) {
       longURL = `http://${longURL}`;
     }
@@ -219,7 +234,8 @@ app.get('/login', (req, res) => {
  */
 
 app.post('/logout', (req, res) => {
-  req.session = null;
+  // Only remove id from session cookie to ensure unique views are accurate:
+  req.session.id = null;
   res.redirect('/login');
 });
 
@@ -236,6 +252,7 @@ app.post('/urls', (req, res) => {
       userID: cookieId,
       date: moment().format('MMMM Do YYYY, h:mm:ss a'),
       visitNumber: 0,
+      uniqueVisits: 0,
     };
     res.status(302);
     res.redirect(`/urls/${random}`);
@@ -345,6 +362,7 @@ app.delete('/urls/:id/delete', (req, res) => {
   }
   res.redirect('/urls');
 });
+
 
 /*
  * ========================================

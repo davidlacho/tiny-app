@@ -17,6 +17,10 @@
         Number Of Visits:
         <%= urls[shortURL].visitNumber %>
       </li>
+      <li class="list-group-item">
+        Number Of Unique Visits:
+        <%= urls[shortURL].uniqueVisits %>
+      </li>
     </ul>
     <div class="input-group mb-3">
       <form method="POST" class="custom-flex-form" action="/urls/<%= shortURL %>/?_method=PUT">
