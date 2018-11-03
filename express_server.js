@@ -264,6 +264,7 @@ app.post('/urls', (req, res) => {
     res.status(401);
     res.render('warning', templateVars);
   }
+  console.log(users, urlDatabase);
 });
 
 app.post('/register', (req, res) => {
